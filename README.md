@@ -47,6 +47,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 6 - Incluir sua chave de API do OpenWeather na variavel OPENWEATHER_API_KEY que está no segundo Node
 7 - Salvar as credentials
 8 - Executar o workflow
+9 - Abrir seu telegram e escrever na sequência Cidade,Uf. Ex: Curitiba, PR
 
 ```
 
