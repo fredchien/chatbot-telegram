@@ -13,7 +13,7 @@
   <a href="#sparkles-funcionalidades">Funcionalidades</a> &#xa0; | &#xa0;
   <a href="#rocket-tecnologias">Tecnologias</a> &#xa0; | &#xa0;
   <a href="#checkered_flag-começando">Importando Workflow</a> &#xa0; | &#xa0;
-  <a href="https://github.com/EstudioVnW/" target="_blank">Autor</a>
+  <a href="https://github.com/fredchien" target="_blank">Autor</a>
 </p>
 
 <br>
