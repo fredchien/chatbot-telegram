@@ -1,0 +1,256 @@
+{
+  "name": "[FTR] Bot Clima",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        16
+      ],
+      "id": "3a43d457-117a-4dfe-9880-89468d8e1575",
+      "name": "Telegram Trigger",
+      "webhookId": "c51b2ae0-3e9f-4ed5-951a-0c8cc786dbba",
+      "credentials": {
+        "telegramApi": {
+          "id": "fNJK4LUTu8P7pCSg",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4280f3af-211a-4a73-afaa-cd5ee369508e",
+              "name": "queue",
+              "value": "={{ $json.message.text.trim().toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "a7e6f57c-12a7-4aa1-9623-446e0377ffa1",
+              "name": "OPENWEATHER_API_KEY",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        16
+      ],
+      "id": "3a8ba492-f392-45b0-9a52-bacae8a9264a",
+      "name": "MessageReceived"
+    },
+    {
+      "parameters": {
+        "url": "https://api.openweathermap.org/data/2.5/weather",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.queue }},br"
+            },
+            {
+              "name": "units",
+              "value": "metric"
+            },
+            {
+              "name": "lang",
+              "value": "pt_br"
+            },
+            {
+              "name": "appid",
+              "value": "={{ $json.OPENWEATHER_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        448,
+        16
+      ],
+      "id": "88b9bab3-5712-42af-ba4e-795b3c5d939b",
+      "name": "HTTP Request",
+      "alwaysOutputData": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6c3ac7fa-e940-40cc-994c-fc2382bbbbfd",
+              "name": "message",
+              "value": "❌ Cidade não encontrada. Use o formato Cidade,UF (ex.: São Paulo,SP).",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        112
+      ],
+      "id": "281c9aba-6b17-411b-aed8-526ad5436633",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        16
+      ],
+      "id": "6f3cec2f-fa70-41ba-85a7-d25a9db313f2",
+      "name": "Send a text message",
+      "webhookId": "2c5651b0-4853-4914-b870-2861f90e5eda",
+      "credentials": {
+        "telegramApi": {
+          "id": "fNJK4LUTu8P7pCSg",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "519f76af-fd6f-48ac-980d-0a6df2348843",
+              "name": "message",
+              "value": "=A temperatura em {{ $json.name }} é de {{ $json.main.temp.round() }}°C",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        -80
+      ],
+      "id": "af706d7c-7628-40bb-af96-2423717bcb6e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "content": "Inclusão e formatação de dados\nIncluir a OPENWEATHER_API_KEY aqui.",
+        "height": 224,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "b25531b8-1d96-48d8-aaf2-5880862f4b47",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "MessageReceived",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MessageReceived": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "258af910-3eb0-4ac2-a606-d3124a3edb97",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7fe24ae2ca7ce78a603a6c7307fbc2d9d281d6b5410aaa5914fd4f10243a70b5"
+  },
+  "id": "_FtTS65HPq2wukz82wulJ",
+  "tags": []
+}
